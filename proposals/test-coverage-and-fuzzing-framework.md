@@ -274,9 +274,6 @@ Additional project-specific acceptance conditions:
 **Total Funding Request:**
 
 ### Payment Breakdown by Milestone
-- Milestone 1 _(Name)_: XX CC upon committee acceptance
-- Milestone 2 _(Name)_: XX CC upon committee acceptance
-- Milestone N _(Name)_: XX CC upon final release and acceptance
 
 - Milestone 1 (DamlCov: Instrumentation Engine): 250,000 CC upon committee acceptance
 - Milestone 2 (DamlCov: Runtime & Reporting): 750,000 CC upon committee acceptance and release
