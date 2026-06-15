@@ -100,7 +100,7 @@ This section lists the ecosystem adopters who expressed interest in adopting and
 
 - Quantstamp (audit provider): DamlCov will be used to discover untested code in client audits.
 - Coinversaa (project on Canton): DamlCov will be used to evaluate and strengthen the test suite.
-- Peaceful Studio (@monsieurleberre): Specifically interested in multi-client support to use with a C# SDK. 
+- Peaceful Studio (@monsieurleberre): Specifically interested in multi-client support to use with a C# SDK. *"Hand-authored Daml Script scenarios are what we have today; pointing at branches that aren't exercised is the missing piece."*
 
 ### 4. Backward Compatibility
 
@@ -163,10 +163,11 @@ The Tech & Ops Committee will evaluate completion based on:
 
 Additional project-specific acceptance conditions:
 
-- DamlCov produces accurate line and branch coverage for Daml contracts compiled to Daml-LF v2
-- Coverage reports validated against Splice reference packages and Daml Finance library
-- HTML and LCOV report formats are correct and render properly in standard viewers
-- Documentation sufficient for a Daml developer to install and use the tool without assistance
+- DamlCov produces accurate line and branch coverage for Daml contracts compiled to Daml-LF v2. (We consider v1 deprecated of scope for DamlCov.)
+- Coverage reports validated against Splice reference packages and Daml Finance library: DamlCov produces a line/branch report for the full Splice token-standard reference package and the Daml Finance Holding module, hand-checked against the source for at least one known-untested branch per file
+- HTML and LCOV report formats are correct and render properly in standard viewers.
+- Documentation sufficient for a Daml developer to install and use the tool without assistance.
+- DamlCov is usable with Node, Java and C#.
 
 ---
 
