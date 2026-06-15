@@ -221,6 +221,14 @@ The grant is denominated in fixed Canton Coin and will require a re-evaluation a
 
 ---
 
+## Named Ecosystem Adopters
+This section lists the ecosystem adopters who expressed interest in adopting and using DamlFuzz. It will be periodically updated as we gather additional support.
+
+- Quantstamp (audit provider): DamlFuzz will be used to discover invariant violations in client audits.
+- Coinversaa (project on Canton): DamlFuzz will be used to strengthen the test suite.
+
+---
+
 ## Co-Marketing
 Upon release, the implementing entity will collaborate with the Foundation on:
 
