@@ -126,6 +126,12 @@ No backward compatibility impact. DamlCov will be a separate tool that instrumen
   - Ongoing maintenance of the project
   - Number of (un)resolved developer support tickets in Github
 
+### Milestone 4: Ecosystem Adoption
+- **Estimated Delivery:** Ongoing for 12 month after delivering Milestone 2
+- **Focus:** The team will focus on supporting ecosystem projects and other ecosystem participants in integrating DamlCov to measure and improve the completeness of their test suites. This is an event-based milestone that aligns the grant and the proposed tool with the ecosystem adoption. We request 50,000 CC/project using the DamlCov, as demonstrated by their repository or an external audit report. The events will count within the first 12 months of the tool becoming usable, and the payouts will be limited to such 8 events (that is 400,000 CC milestone cap).
+- **Deliverables / Value Metrics:**
+  - Number of projects integrating DamlCov
+
 ---
 
 ## Acceptance Criteria
@@ -152,8 +158,9 @@ Additional project-specific acceptance conditions:
 ### Payment Breakdown by Milestone
 
 - Milestone 1 (Instrumentation Engine): 250,000 CC upon committee acceptance
-- Milestone 2 (Runtime & Reporting): 750,000 CC upon committee acceptance and release
+- Milestone 2 (Runtime & Reporting): 350,000 CC upon committee acceptance and release
 - Milestone 3 (Ongoing Maintenance): 25,000 CC/month, paid for the first 12 months after the committee acceptance of Milestone 2
+- Milestone 4 (Ecosystem Adoption): an event-based milestone to demonstrate ecosystem alignment; 50,000 CC/project using the DamlFuzz, as demonstrated by their repository or an external audit report, within 12 months after the committee acceptance of Milestone 2, capped at 400,000 CC (8 payable events)
 
 ### Volatility Stipulation
 The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark.
