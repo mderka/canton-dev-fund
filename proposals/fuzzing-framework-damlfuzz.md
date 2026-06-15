@@ -173,6 +173,8 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package) an
   - Feature request triage
   - Additional feature development as feasible
 
+Note that DamlFuzz will continue being usable even after funding period. The proposed tool is a standalone library and executable on top of stable Daml Script APIs and Daml-LF protobuf, so it will continue to work against any Daml version that does not break Script API contracts. All materials including `.dars` and tutorials will remain published, and the repository will remain open for community PRs and open-source development. The implementers are interested in ongoing maintenance of the tool beyond the indicated period.
+
 - **Deliverables / Value Metrics:**
   - Ongoing maintenance of the project
   - Number of (un)resolved developer support tickets in Github
