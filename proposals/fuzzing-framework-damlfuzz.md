@@ -3,6 +3,8 @@
 **Author:** Martin Derka, Head of New Initiatives at Quantstamp, on behalf of Quantstamp
 **Status:** Submitted
 **Created:** 2026-03-05
+**Label:** daml-tooling
+**[Champion](https://github.com/canton-foundation/canton-dev-fund/blob/main/sig-directory.md):** @monsieurleberre (Matthieu Le Berre)
 
 ---
 
