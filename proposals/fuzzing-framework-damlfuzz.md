@@ -273,6 +273,8 @@ Every major competing smart contract platform has addressed this gap. Foundry (`
 
 The immediate beneficiaries are the developers building on Canton Network today - those implementing CIP-0056 token standards, building dApps under CIP-0103, or contributing to shared infrastructure like Daml Finance. The strategic beneficiary is the Canton Network itself: a platform that can credibly claim production-quality security tooling attracts more sophisticated builders and more institutional adopters. Developer tooling is infrastructure, and like all infrastructure, its absence is most visible when something breaks.
 
+Note: We received verbal confirmation that there is no overlapping work at Digital Assets. 
+
 ---
 
 ## Rationale
