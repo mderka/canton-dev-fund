@@ -128,6 +128,8 @@ No backward compatibility impact. DamlCov will be a separate tool that instrumen
   - Ongoing maintenance of the project
   - Number of (un)resolved developer support tickets in Github
 
+Note that DamlCov will continue being usable even after funding period. The proposed tool is a standalone library and executable on top of stable Daml Script APIs and Daml-LF protobuf, so it will continue to work against any Daml version that does not break Script API contracts. All materials including `.dars` and tutorials will remain published, and the repository will remain open for community PRs and open-source development. The implementers are interested in ongoing maintenance of the tool beyond the indicated period.
+
 ### Milestone 4: Ecosystem Adoption
 - **Estimated Delivery:** Ongoing for 12 month after delivering Milestone 2
 - **Focus:** The team will focus on supporting ecosystem projects and other ecosystem participants in integrating DamlCov to measure and improve the completeness of their test suites. This is an event-based milestone that aligns the grant and the proposed tool with the ecosystem adoption. We request 50,000 CC/project using the DamlCov, as demonstrated by their repository or an external audit report. The events will count within the first 12 months of the tool becoming usable, and the payouts will be limited to such 8 events (that is 400,000 CC milestone cap).
