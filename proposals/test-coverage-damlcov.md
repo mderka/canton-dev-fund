@@ -50,7 +50,9 @@ The tool will parse compiled `.dar` files (which contain Daml-LF archives in pro
 
 Instrumentation will be done by wrapping target expressions with a side-effecting `trace` call that logs a unique probe ID when executed. The Daml engine supports `trace` as a built-in function that outputs a string to the debug log and returns its second argument unchanged, making it suitable for non-intrusive instrumentation. The `daml test` runner captures trace output in its console output; DamlCov will parse this output to record probe hits. Each probe ID will map back to a source location via the Daml-LF location annotations (the Daml-LF protobuf format includes `Location` messages containing module reference, start line, start column, end line, end column for each expression - these are the source maps).
 
-If trace output volume becomes a bottleneck (thousands of probes per test run), an alternative approach is to instrument using a dedicated coverage contract that records probe hits as ledger state, queryable after test execution. This adds slight complexity but eliminates dependency on log parsing. We will evaluate both approaches in Milestone 1 and select the more robust one.
+If trace output volume becomes a bottleneck (thousands of probes per test run), an alternative approach is to instrument using a dedicated coverage contract that records probe hits as ledger state, queryable after test execution. This adds slight complexity but eliminates dependency on log parsing. This alternative is strictly dev-time / local-environment instrumentation. Coverage probes are not present in any production deployment; the privacy model of the original contracts is unmodified.
+
+We will evaluate both approaches in Milestone 1 and select the more robust one.
 
 Subsequently, when instrumented contracts are executed via `daml test` or Daml Script, trace output will be captured and parsed into a coverage database. The runtime will:
 - Collect probe hits in memory during test execution
@@ -58,11 +60,14 @@ Subsequently, when instrumented contracts are executed via `daml test` or Daml S
 - Support aggregation across multiple test runs (critical for large projects with test suites split across files)
 - Handle the existing `--save-coverage` / `--load-coverage` flags as input, extending rather than replacing the current coarse-grained coverage
 
+DamlCov will be able export the coverage data as an artifact after the run, so that they can be consumed in the subsequent pipeline steps. This underpins one of the major use cases for the tool--- the ability to develop service-layer integration tests in multi-client setting exercising contracts through the ledger API, getting contract-level coverage back. Within this proposal, the implementers will ensure support for Java, Node, and C#.
+
+
 Reporting will include:
 - **Terminal report:** Colored summary showing file-by-file line/branch/expression percentages
 - **HTML report:** Annotated source files with hit/miss highlighting (modeled on `cargo-tarpaulin`'s HTML output and `lcov`'s genhtml)
 - **LCOV export:** Standard `lcov.info` format for integration with existing CI coverage services (Codecov, Coveralls)
-- **JSON export:** Machine-readable format for custom tooling
+- **JSON export:** Machine-readable format for custom tooling (coverage artifact with stable schema; ingestible from execution paths other than `dpm test`)
 
 Assumed interaction with existing Daml toolchain:
 
