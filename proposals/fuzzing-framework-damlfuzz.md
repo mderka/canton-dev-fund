@@ -155,10 +155,12 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package) an
 
 ### Milestone 3: DamlFuzz: Benchmarking, Optimization and Standardized Applications
 - **Estimated Delivery:** 12 weeks after commencing
-- **Focus:** Pre-built properties for CIP standards, coverage-guided exploration, ecosystem validation
+- **Focus:** Pre-built properties for CIP standards, coverage-guided exploration, ecosystem usability validation
 - **Deliverables / Value Metrics:**
   - Performance optimizations and new benchmarks
+  - Coverage guided exploration integrated into the fuzzing engine with demonstrated improvements over plain property-based testing
   - Pre-built properties for selected CIP standards including CIP-0056
+  - Ecosystem usabilty validation of usability demonstrated through published case studies and integration tutorials
 
 ### Milestone 4: Ongoing Maintenance
 - **Estimated Delivery:** Ongoing for 12 month after delivering Milestone 2
