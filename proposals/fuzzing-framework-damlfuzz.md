@@ -175,6 +175,11 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package) an
   - Ongoing maintenance of the project
   - Number of (un)resolved developer support tickets in Github
 
+### Milestone 5: Ecosystem Adoption
+- **Estimated Delivery:** Ongoing for 12 month after delivering Milestone 2
+- **Focus:** The team will focus on supporting ecosystem projects and other ecosystem participants in integrating DamlFuzz to improve the security posture of their code. This is an event-based milestone that aligns the grant and the proposed tool with the ecosystem adoption. We request 100,000 CC/project using the DamlFuzz, as demonstrated by their repository or an external audit report. The events will count within the first 12 months of the tool becoming usable, and the payouts will be limited to such 10 events (that is 1,000,000 CC milestone cap).
+- **Deliverables / Value Metrics:**
+  - Number of projects integrating DamlFuzz
 ---
 
 ## Acceptance Criteria
@@ -205,7 +210,7 @@ Additional project-specific acceptance conditions:
 - Milestone 2 (Fuzzing Engine with Shrinking): 500,000 CC upon committee acceptance and release
 - Milestone 3 (Benchmarking, Optimization and Standardized Applications): 150,000 CC upon committee acceptance and release
 - Milestone 4 (Ongoing Maintenance): 25,000 CC/month, paid for the first 12 months after the committee acceptance of Milestone 2
-- Milestone 5 (Ecosystem Adoption): an event-based milestone to demonstrate ecosystem alignment; 100,000 CC/project using the DamlFuzz, as demonstrated by their repository or an external audit report, within 12 months after the committee acceptance of Milestone 2, capped at 1,000,000 CC (10 payable event)
+- Milestone 5 (Ecosystem Adoption): an event-based milestone to demonstrate ecosystem alignment; 100,000 CC/project using the DamlFuzz, as demonstrated by their repository or an external audit report, within 12 months after the committee acceptance of Milestone 2, capped at 1,000,000 CC (10 payable events)
 
 ### Volatility Stipulation
 The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark.
