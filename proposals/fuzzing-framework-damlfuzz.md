@@ -201,10 +201,11 @@ Additional project-specific acceptance conditions:
 
 ### Payment Breakdown by Milestone
 
-- Milestone 1 (Generator Framework and Property DSL): 1,000,000 CC
-- Milestone 2 (Fuzzing Engine with Shrinking): 1,000,000 CC upon committee acceptance and release
+- Milestone 1 (Generator Framework and Property DSL): 500,000 CC
+- Milestone 2 (Fuzzing Engine with Shrinking): 500,000 CC upon committee acceptance and release
 - Milestone 3 (Benchmarking, Optimization and Standardized Applications): 150,000 CC upon committee acceptance and release
 - Milestone 4 (Ongoing Maintenance): 25,000 CC/month, paid for the first 12 months after the committee acceptance of Milestone 2
+- Milestone 5 (Ecosystem Adoption): an event-based milestone to demonstrate ecosystem alignment; 100,000 CC/project using the DamlFuzz, as demonstrated by their repository or an external audit report, within 12 months after the committee acceptance of Milestone 2, capped at 1,000,000 CC (10 payable event)
 
 ### Volatility Stipulation
 The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark.
