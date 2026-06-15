@@ -74,6 +74,9 @@ Assumed interaction with existing Daml toolchain:
 | `--save-coverage` / `--load-coverage` | DamlCov reads/writes compatible format, adding granular data |
 | DPM | DamlCov installs as a tool via `dpm install` |
 
+
+Prior coverage work validates the approach but is not reusable---the Daml-LF instrumentation and privacy-aware probe model need a ground-up design. The funding covers the Daml-specific engineering.
+
 ### 3. Architectural Alignment
 
 The 2026 Canton Developer Experience Survey identified security tooling as "Important" or "Critical" by 75% of respondents, yet the current tooling support for measuring test coverage in Daml is insufficient. Beyond the use during the SDL of every project building for Canton Network, we list several use cases where the tool is applicable to CIPs and projects that are of interest to the overall Canton ecosystem:
