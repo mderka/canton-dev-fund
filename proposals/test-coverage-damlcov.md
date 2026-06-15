@@ -90,6 +90,13 @@ The 2026 Canton Developer Experience Survey identified security tooling as "Impo
 - **Dev Fund PR #327 (dpm-trace):** DamlCov could consume and benefit from the `damlc --debug-info` format proposed in [https://github.com/canton-foundation/canton-dev-fund/pull/327](PR#327) once it lands; it will fall back to Daml-LF location annotations otherwise.
 - **Dev Fund PR #52 (DamlFuzz):** DamlCov can provide traces to DamlFuzz to guide the fuzzing.
 
+### Named Ecosystem Adopters
+This section lists the ecosystem adopters who expressed interest in adopting and using DamlCov. It will be periodically updated as we gather additional support.
+
+- Quantstamp (audit provider): DamlCov will be used to discover untested code in client audits.
+- Coinversaa (project on Canton): DamlCov will be used to evaluate and strengthen the test suite.
+- Peaceful Studio (@monsieurleberre): Specifically interested in multi-client support to use with a C# SDK. 
+
 ### 4. Backward Compatibility
 
 No backward compatibility impact. DamlCov will be a separate tool that instruments compiled `.dar` files and wraps the existing test runner. It will use only public Daml-LF protobuf format and Daml Script APIs and will not modify the Daml compiler, SDK, or Canton node software. Projects will opt in by installing DamlCov via DPM.
@@ -167,19 +174,13 @@ Additional project-specific acceptance conditions:
 - Milestone 1 (Instrumentation Engine): 250,000 CC upon committee acceptance
 - Milestone 2 (Runtime & Reporting): 350,000 CC upon committee acceptance and release
 - Milestone 3 (Ongoing Maintenance): 25,000 CC/month, paid for the first 12 months after the committee acceptance of Milestone 2
-- Milestone 4 (Ecosystem Adoption): an event-based milestone to demonstrate ecosystem alignment; 50,000 CC/project using the DamlFuzz, as demonstrated by their repository or an external audit report, within 12 months after the committee acceptance of Milestone 2, capped at 400,000 CC (8 payable events)
+- Milestone 4 (Ecosystem Adoption): an event-based milestone to demonstrate ecosystem alignment; 50,000 CC/project using the DamlCov, as demonstrated by their repository or an external audit report, within 12 months after the committee acceptance of Milestone 2, capped at 400,000 CC (8 payable events)
 
 ### Volatility Stipulation
 The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark.
 
 ---
 
-## Named Ecosystem Adopters
-This section lists the ecosystem adopters who expressed interest in adopting and using DamlCov. It will be periodically updated as we gather additional support.
-
-- Quantstamp (audit provider): DamlFuzz will be used to discover invariant violations in client audits.
-- Coinversaa (project on Canton): DamlFuzz will be used to strengthen the test suite.
-- 
 
 ## Co-Marketing
 Upon release, the implementing entity will collaborate with the Foundation on:
