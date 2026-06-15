@@ -84,6 +84,8 @@ The 2026 Canton Developer Experience Survey identified security tooling as "Impo
 - **Daml Finance library:** The community's primary reusable library (24 stars, zero formal verification) would immediately benefit from coverage measurement, revealing which instrument types and lifecycle paths are under-tested.
 - **Dev Fund PR #12 (B-Method Verification):** Coverage data will help prioritize which code paths most urgently need formal verification - the untested paths are the highest-risk.
 - **Dev Fund PR #5 (Daml Security Framework):** The `daml-check` static analysis tool proposed in PR #5 is complementary; DamlCov will measure what is tested, `daml-check` finds what is vulnerable. Together they will provide a more complete security picture.
+- **Dev Fund PR #327 (dpm-trace):** DamlCov could consume and benefit from the `damlc --debug-info` format proposed in [https://github.com/canton-foundation/canton-dev-fund/pull/327](PR#327) once it lands; it will fall back to Daml-LF location annotations otherwise.
+- **Dev Fund PR #52 (DamlFuzz):** DamlCov can provide traces to DamlFuzz to guide the fuzzing.
 
 ### 4. Backward Compatibility
 
@@ -166,6 +168,13 @@ Additional project-specific acceptance conditions:
 The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark.
 
 ---
+
+## Named Ecosystem Adopters
+This section lists the ecosystem adopters who expressed interest in adopting and using DamlCov. It will be periodically updated as we gather additional support.
+
+- Quantstamp (audit provider): DamlFuzz will be used to discover invariant violations in client audits.
+- Coinversaa (project on Canton): DamlFuzz will be used to strengthen the test suite.
+- 
 
 ## Co-Marketing
 Upon release, the implementing entity will collaborate with the Foundation on:
