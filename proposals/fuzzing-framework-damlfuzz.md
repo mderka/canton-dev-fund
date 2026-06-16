@@ -127,6 +127,13 @@ The 2026 Canton Developer Experience Survey identified security tooling as "Impo
 - **CIP-0013 (Re-onboarding Bug):** One could write a property that would have caught this bug ("SV minting never exceeds agreed share after any sequence of onboarding/removal/re-onboarding").
 - **CIP-0105 (SV Locking):** Tier determination and vesting calculations under random lock/unlock sequences are natural fuzzing targets.
 
+### Named Ecosystem Adopters
+This section lists the ecosystem adopters who expressed interest in adopting and using DamlFuzz. It will be periodically updated as we gather additional support.
+
+- Quantstamp (audit provider): DamlFuzz will be used to discover invariant violations in client audits.
+- Coinversaa (project on Canton): DamlFuzz will be used to strengthen the test suite.
+
+
 ### 4. Backward Compatibility
 
 No backward compatibility impact. DamlFuzz will be a library (`.dar` package) and a companion Haskell executable. It will use only public Daml Script APIs and will not modify the Daml compiler, SDK, or Canton node software. Projects will opt in by adding DamlFuzz as a test dependency.
@@ -218,14 +225,6 @@ Additional project-specific acceptance conditions:
 
 ### Volatility Stipulation
 The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark.
-
----
-
-## Named Ecosystem Adopters
-This section lists the ecosystem adopters who expressed interest in adopting and using DamlFuzz. It will be periodically updated as we gather additional support.
-
-- Quantstamp (audit provider): DamlFuzz will be used to discover invariant violations in client audits.
-- Coinversaa (project on Canton): DamlFuzz will be used to strengthen the test suite.
 
 ---
 
