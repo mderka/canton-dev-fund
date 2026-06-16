@@ -62,7 +62,7 @@ Subsequently, when instrumented contracts are executed via `daml test` or Daml S
 - Support aggregation across multiple test runs (critical for large projects with test suites split across files)
 - Handle the existing `--save-coverage` / `--load-coverage` flags as input, extending rather than replacing the current coarse-grained coverage
 
-DamlCov will be able export the coverage data as an artifact after the run, so that they can be consumed in the subsequent pipeline steps. This underpins one of the major use cases for the tool--- the ability to develop service-layer integration tests in multi-client setting exercising contracts through the ledger API, getting contract-level coverage back. Within this proposal, the implementers will ensure support for Java, Node, and C#.
+DamlCov will be able export the coverage data as an artifact after the run, so that they can be consumed in the subsequent pipeline steps. This underpins one of the major use cases for the tool---the ability to develop service-layer integration tests in multi-client setting exercising contracts through the ledger API, getting contract-level coverage back. Within this proposal, the implementers will ensure support for Java, Node, and C#.
 
 
 Reporting will include:
