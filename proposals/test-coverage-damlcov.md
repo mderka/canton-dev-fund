@@ -12,7 +12,7 @@
 
 We propose developing a test coverage tool for Daml smart contracts.
 
-Today, `daml test --show-coverage` reports only which templates were created and which choices were exercised. It tells developers nothing about which branches within a choice body were taken, which guard conditions were tested, or which error paths remain unexplored. Developers are used to tooling that is mature and readily available for languages and development frameworks in other ecosystems (c.f. the Foundry tools for Ethereum), and its absence provides an inferior experience for developers of applications on Canton Network.
+Today, `dpm test --show-coverage` reports coverage at the template and choice granularity, i.e., which templates were created, which choices and interface choices were exercised, broken down by internal-vs-external scope, and it can name the specific templates, choices, and interfaces left uncovered. What it does not reach is the logic *inside* choice bodies: which branches were taken, which guard conditions were tested, or which error paths remain unexplored. It also produces no HTML or LCOV reports for CI integration. Developers are used to tooling that is mature and readily available for languages and development frameworks in other ecosystems (c.f. the Foundry tools for Ethereum), and its absence provides an inferior experience for developers of applications on Canton Network.
 
 The proposed test coverage tool will measure line, branch, and expression test coverage. It will be developed as open-source, free to use, executable locally, will integrate with the current Daml tooling, and will provide reports usable in CI/CD pipelines.
 
@@ -22,11 +22,13 @@ The proposed test coverage tool will measure line, branch, and expression test c
 
 ### 1. Objective
 
-**Problem:** Daml's existing coverage mechanism (`--show-coverage`) tracks only two coarse-grained metrics: (1) whether each contract template was created at least once; and (2) whether each choice was exercised at least once. This provides no insight into:
+**Problem:** Daml's existing coverage mechanism (`--show-coverage`) reports at template and choice granularity: which templates were created and which choices were exercised, including interface implementations and interface choices, split by internal-vs-external scope. The flag also reports the names of the specific templates, choices, and interfaces left uncovered. This is genuinely useful at the structural level, but it stops at the boundary of the choice body. It provides no insight into:
 - Which branches inside `case`, `if/then/else`, or guard expressions were taken
 - Which error conditions (`abort`, `assertMsg`) were triggered
 - What percentage of the contract logic was actually tested
 - Whether specific authorization paths (different controllers exercising the same choice) were covered
+
+It also does it emit HTML or LCOV reports consumable by standard CI coverage services.
 
 Test coverage information is one of the basic metrics when evaluating the quality of code. Every major smart contract platform except Daml has line-level coverage tooling: Foundry (`forge coverage`) for Solidity, `cargo-tarpaulin` for Soroban/Rust, the Move Coverage Tool for Aptos. The 2026 Canton Developer Experience Survey identified security tooling as "Important" or "Critical" by 75% of respondents.
 
@@ -147,7 +149,7 @@ Note that DamlCov will continue being usable even after funding period. The prop
 
 ### Milestone 4: Ecosystem Adoption
 - **Estimated Delivery:** Ongoing for 12 month after delivering Milestone 2
-- **Focus:** The team will focus on supporting ecosystem projects and other ecosystem participants in integrating DamlCov to measure and improve the completeness of their test suites. This is an event-based milestone that aligns the grant and the proposed tool with the ecosystem adoption. We request 50,000 CC/project using the DamlCov, as demonstrated by their repository or an external audit report. The events will count within the first 12 months of the tool becoming usable, and the payouts will be limited to such 8 events (that is 400,000 CC milestone cap).
+- **Focus:** The team will focus on supporting ecosystem projects and other ecosystem participants in integrating DamlCov to measure and improve the completeness of their test suites. This is an event-based milestone that aligns the grant and the proposed tool with the ecosystem adoption. We request 50,000 CC/project using the DamlCov, as demonstrated by their repository (ideally publishing `coverage.lcov` to Codecov and a CI badge if configured) or an external audit report. The events will count within the first 12 months of the tool becoming usable, and the payouts will be limited to such 8 events (that is 400,000 CC milestone cap).
 - **Deliverables / Value Metrics:**
   - Number of projects integrating DamlCov
 
@@ -226,7 +228,7 @@ The primary success metric is adoption: Daml developers are routinely measuring 
 
 ## Motivation
 
-Today, Daml developers ship contracts with structurally inadequate test assurance. The existing `--show-coverage` flag tells a developer only whether a template was created and whether a choice was exercised - binary facts that reveal nothing about the internal logic paths actually exercised. A developer can achieve "100% coverage" under the current metric while leaving entire branches of authorization logic, error handling, and guard conditions completely untested.
+Today, Daml developers ship contracts with structurally inadequate test assurance. The existing `--show-coverage` flag reports coverage at the template and choice level. It reveals nothing about the internal logic paths actually exercised within a choice body. A developer can achieve "100% coverage" under the current metric while leaving entire branches of authorization logic, error handling, and guard conditions completely untested.
 
 Every major competing smart contract platform has addressed this gap. Foundry (`forge coverage`) has become a foundational part of the Ethereum developer experience. Soroban has `cargo-tarpaulin`. The Move ecosystem has the Move Coverage Tool. Daml's absence from this category is conspicuous and is reflected in survey data: 75% of respondents to the 2026 Canton Developer Experience Survey rated security tooling as "Important" or "Critical," while the current tooling provides no meaningful coverage measurement.
 
