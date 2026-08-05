@@ -252,7 +252,7 @@ Note that DamlFuzz will continue being usable even after funding period. The pro
 
 ### Milestone 5: Ecosystem Adoption
 - **Estimated Delivery:** Ongoing for 12 months after the committee acceptance of Milestone 3
-- **Focus:** The team will focus on supporting ecosystem projects and other ecosystem participants in integrating DamlFuzz through the Daml-native workflow (explicitly excluding zero-config path use) to improve the security posture of their code. This is an event-based milestone that aligns the grant and the proposed tool with the ecosystem adoption. We request 100,000 CC/project using the DamlFuzz, as demonstrated by their repository or an external audit report. The events will count within the adoption window -- the first 12 months after the committee acceptance of Milestone 3, and the payouts will be limited to such 10 events (that is 1,000,000 CC milestone cap).
+- **Focus:** The team will focus on supporting ecosystem projects and other ecosystem participants in integrating DamlFuzz through the Daml-native workflow (explicitly excluding zero-config path use) to improve the security posture of their code. This is an event-based milestone that aligns the grant and the proposed tool with the ecosystem adoption. An adoption event is an external organization integrating DamlFuzz into its development or assurance workflow. Events are evidenced by verifiable artifacts committed to the codebase, for example, a DamlFuzz dependency in `daml.yaml` together with campaign definitions, or CI configuration executing DamlFuzz in the adopter's repository, or the adopter's own published report describing its DamlFuzz use to the Tech & Ops Committee. The committee is the final arbiter of whether an event qualifies. Events accrue at 100,000 CC per adopting project within the adoption window -- the first 12 months after the committee acceptance of Milestone 3 -- capped at 10 events (1,000,000 CC milestone cap).
 - **Deliverables / Value Metrics:**
   - Number of projects integrating DamlFuzz
 ---
@@ -285,8 +285,9 @@ Additional project-specific acceptance conditions:
 - Milestone 2 (Fuzzing Engine with Shrinking): 500,000 CC upon committee acceptance and release
 - Milestone 3 (Benchmarking, Optimization and Standardized Applications): 150,000 CC upon committee acceptance and release
 - Milestone 4 (Ongoing Maintenance): 25,000 CC/month, paid for the first 12 months after the committee acceptance of Milestone 3
-- Milestone 5 (Ecosystem Adoption): an event-based milestone to demonstrate ecosystem alignment; 100,000 CC/project using the DamlFuzz, as demonstrated by their repository or an external audit report, within 12 months after the committee acceptance of Milestone 3, capped at 1,000,000 CC (10 payable events)
+- Milestone 5 (Ecosystem Adoption): an event-based milestone to demonstrate ecosystem alignment; 100,000 CC/project using the DamlFuzz, as evidenced by the project's repository, or by the adopter directly to the committee, within 12 months after the committee acceptance of Milestone 3, capped at 1,000,000 CC (10 payable events)
 
+evidenced per the Milestone 5 adoption-evidence standard (adopter-authored verifiable artifacts;
 ### Volatility Stipulation
 The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark.
 
