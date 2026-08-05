@@ -41,6 +41,10 @@ The 2026 Canton Developer Experience Survey identified security tooling as "Impo
 
 ### 2. Implementation Mechanics
 
+_Note: A fuzzing tool for Daml was proposed independently in [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) on July 20, 2026 by @fronow. It includes an implemented PoC taking a complementary approach: an external driver fuzzing a live participant over the JSON Ledger API, where this proposal centres on a Daml-native workflow inside `dpm test`. The two teams agreed to join efforts to deliver a production-grade tool with committed long-term maintenance, and this proposal has been adjusted accordingly._
+
+an external driver fuzzing a live participant over the JSON Ledger API, where this proposal centres on a Daml-native workflow inside dpm test
+
 We propose DamlFuzz as a **Daml Script extension** with a companion Haskell library. The design will follow the proven architecture of invariant testing tools that developers are used to from the Ethereum ecosystem, adapted for Daml's unique execution model. The work will focus on three main components:
 
 **Component 1 - Generator Framework (`DamlFuzz.Gen`):**
@@ -49,10 +53,12 @@ The foundation will be a generator library providing:
 - `Gen a` monad for building random value generators
 - Built-in generators for all Daml primitive types: `Int`, `Decimal`, `Text`, `Bool`, `Date`, `Time`, `Party`, `ContractId`
 - Combinators: `oneOf`, `frequency`, `listOf`, `mapOf`, `optional`, `suchThat`, `resize`, `scale`
-- **Automatic derivation** via Template Haskell-style metaprogramming: for any Daml data type defined with `data` or `template`, DamlFuzz will generate an `Arbitrary` instance automatically
+- Automatic derivation via code generation from compiled Daml-LF: DamlFuzz reads a project's .dar, decodes its Daml-LF packages, and emits Daml source providing Arbitrary instances for every user-defined data type and template
 - Shrinking: when a failing input is found, DamlFuzz will systematically reduce it to a minimal reproducer
 
 The key technical challenge is that Daml has no `IO` monad and no `System.Random`. DamlFuzz will solve this by providing a **deterministic PRNG** implemented in pure Daml using `Int` arithmetic. The seed will be supplied externally via the test runner (Haskell side), making tests reproducible.
+
+The daml-fuzz-canton PoC (built independently by @fronow, submitted as [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579), now merged into this effort) validates the reproducibility architecture in practice: it generates transaction plans from an externally supplied deterministic seed. It does so host-side, because its executor drives the ledger from outside over the JSON Ledger API. DamlFuzz adopts the same seed-in, deterministic-out contract and reuses the PoC's generator design and validation methodology as the reference implementation. Behavioural equivalence between the two generators will be maintained through shared cross-validation vectors, and the statistical quality of the implemented PRNG will be validated against the shared algorithm with standard PRNG. An in-Daml implementation remains necessary because campaigns on the primary workflow execute inside Daml Script via `dpm test`, where generators are typed against choice signatures, can invoke user-defined Daml functions and constraints, and run at in-process speed. Those are capabilities that host-side generation cannot provide.
 
 **Component 2 - Property Definition DSL (`DamlFuzz.Property`):**
 
@@ -90,6 +96,8 @@ campaign_token_stress = Campaign
   }
 ```
 
+The daml-fuzz-canton PoC proposed in [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) validates the system-level tier. It contains built-in conservation-of-value and non-negativity checks. Both carry into DamlFuzz's built-in invariant library and will be extended into the CIP-0056 property pack in Milestone 3. The PoC likewise validates the stateful campaign model (randomized multi-party sequences with configurable depth, run count, and action weighting), which DamlFuzz re-expresses as typed, user-authored campaign definitions rather than command-line configuration. The property language is the net-new core, part of Milestone 1, while the existing the PoC provides the built-in set and lists custom invariants as planned.
+
 **Component 3 - Fuzzing Engine (`DamlFuzz.Engine`):**
 
 The engine will orchestrate fuzzing campaigns:
@@ -107,7 +115,14 @@ The engine will orchestrate fuzzing campaigns:
    - Shrink action arguments to smaller values
    - Report the minimal failing sequence
 
-The engine will run as a Haskell executable that invokes Daml Script programmatically, managing the PRNG state and coverage feedback externally while the Daml code handles ledger operations.
+The engine will run as a Haskell executable that invokes Daml Script programmatically, supplying seeds and coverage feedback from the outside, while the Daml code holds the PRNG state, generates the values, and performs the ledger operations.
+
+The [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) PoC already runs this <generate, execute, check, shrink> loop against a live Canton participant. It can remain in the project as the second execution backend.  Three pieces carry over directly:
+1. Campaigns use the PoC's symbolic plan format, so a seed plus a plan replays identically on either backend.
+2. Invariants are evaluated after every accepted action, following the semantics the PoC validated by mutation testing.
+3. PoC has functional sequence-level shrinking.
+
+The remaining development items are shrinking argument values, not just sequence length, and coverage-guided generation. 
 
 #### Interaction with Existing Daml Toolchain
 
@@ -133,9 +148,9 @@ This section lists the ecosystem adopters who expressed interest in adopting and
 - Quantstamp (audit provider): DamlFuzz will be used to discover invariant violations in client audits.
 - Coinversa.ai (project on Canton): DamlFuzz will be used to strengthen the test suite.
 - Bitsafe: would [love better tooling](https://github.com/canton-foundation/canton-dev-fund/pull/323#issuecomment-4798960139) around security, static analysis and test-coverage of Daml, and would integrate the tool into their development workflow
-- Audit provider (name available upon request): DamlFuzz will be used during audit engagements
+- Audit provider 1 (name available upon request): DamlFuzz will be used during audit engagements
 
-An independent proposal for a similar tool in [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579), including the referenced defects in the CIP-0056 implementation, are additional indicators that there is demand for a fuzzer for Daml, and that it will benefit the security of the ecosystem.
+An independent proposal for a similar tool in [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579), including the referenced defects in the CIP-0056 implementation, are additional indicators that there is demand for a fuzzer for Daml, and that it will benefit the security of the ecosystem. _Note: The two teams agreed to join efforts to deliver a production-grade tool with committed long-term maintenance, and this proposal has been adjusted accordingly._
 
 
 ### 4. Backward Compatibility
