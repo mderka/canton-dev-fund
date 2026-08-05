@@ -195,7 +195,7 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package) an
 ## Milestones and Deliverables
 
 ### Milestone 1: DamlFuzz: Generator Framework and Property DSL
-- **Estimated Delivery:** 14 weeks after commencing
+- **Estimated Delivery:** 14 weeks after commencement of the grant
 - **Focus:** Core `Gen` monad, PRNG, combinators, function-, system-, and party-scoped property definition, automatic derivation tool
 - **Deliverables / Value Metrics:**
   - `DamlFuzz.Gen` library with generators for all Daml primitives + combinators
@@ -204,7 +204,7 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package) an
   - Deterministic PRNG in pure Daml, behaviourally equivalent to the PoC's reference generator as verified by shared cross-validation vectors, with statistical quality validated against standard PRNG test batteries
 
 ### Milestone 2: DamlFuzz: Fuzzing Engine with Shrinking
-- **Estimated Delivery:** 8 weeks after commencing
+- **Estimated Delivery:** 8 weeks after the committee acceptance of the prior milestone
 - **Focus:** Campaign orchestration, sequence generation, invariant checking, shrinking, end-to-end backend integration
 - **Deliverables / Value Metrics:**
   - `DamlFuzz.Engine` supporting stateful fuzzing campaigns with configurable depth and runs
@@ -215,7 +215,7 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package) an
   - Performance benchmark per execution path, measured against the [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) PoC's published baseline
 
 ### Milestone 3: DamlFuzz: Benchmarking, Optimization and Standardized Applications
-- **Estimated Delivery:** 12 weeks after commencing
+- **Estimated Delivery:** 12 weeks after the committee acceptance of the prior milestone
 - **Focus:** Pre-built properties for CIP standards, coverage-guided exploration, ecosystem usability validation
 - **Deliverables / Value Metrics:**
   - Performance optimizations and new benchmarks
@@ -224,7 +224,7 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package) an
   - Ecosystem usabilty validation demonstrated through published case studies and integration tutorials
 
 ### Milestone 4: Ongoing Maintenance
-- **Estimated Delivery:** Ongoing for 12 months after delivering Milestone 3
+- **Estimated Delivery:** Ongoing for 12 months after the committee acceptance of Milestone 3
 - **Focus:** The team commits to maintaining the tool and providing developer support for 12 months following the committee acceptance of Milestone 3. The code will be maintained as an open-source project during the entire duration. The team is interested in providing long-term support for the tool even after the initial commitment window elapses. In laymen terms, the team will ensure that the tool is ready and safe to use out of the box, actively maintain the repository during this period, and provide developer support for the ecosystem. This will include:
   - Bugfixes
   - Security updates - critical with the dependency supply chain attack 
@@ -241,8 +241,8 @@ Note that DamlFuzz will continue being usable even after funding period. The pro
   - Number of (un)resolved developer support tickets in Github
 
 ### Milestone 5: Ecosystem Adoption
-- **Estimated Delivery:** Ongoing for 12 months after acceptance of Milestone 3
-- **Focus:** The team will focus on supporting ecosystem projects and other ecosystem participants in integrating DamlFuzz through the Daml-native workflow (explicitly excluding zero-config path use) to improve the security posture of their code. This is an event-based milestone that aligns the grant and the proposed tool with the ecosystem adoption. We request 100,000 CC/project using the DamlFuzz, as demonstrated by their repository or an external audit report. The events will count within the adoption window of first 12 months of the committee acceptance of Milestone 3, and the payouts will be limited to such 10 events (that is 1,000,000 CC milestone cap).
+- **Estimated Delivery:** Ongoing for 12 months after the committee acceptance of Milestone 3
+- **Focus:** The team will focus on supporting ecosystem projects and other ecosystem participants in integrating DamlFuzz through the Daml-native workflow (explicitly excluding zero-config path use) to improve the security posture of their code. This is an event-based milestone that aligns the grant and the proposed tool with the ecosystem adoption. We request 100,000 CC/project using the DamlFuzz, as demonstrated by their repository or an external audit report. The events will count within the adoption window -- the first 12 months after the committee acceptance of Milestone 3, and the payouts will be limited to such 10 events (that is 1,000,000 CC milestone cap).
 - **Deliverables / Value Metrics:**
   - Number of projects integrating DamlFuzz
 ---
@@ -271,7 +271,7 @@ Additional project-specific acceptance conditions:
 
 ### Payment Breakdown by Milestone
 
-- Milestone 1 (Generator Framework and Property DSL): 500,000 CC
+- Milestone 1 (Generator Framework and Property DSL): 500,000 CC upon committee acceptance and release
 - Milestone 2 (Fuzzing Engine with Shrinking): 500,000 CC upon committee acceptance and release
 - Milestone 3 (Benchmarking, Optimization and Standardized Applications): 150,000 CC upon committee acceptance and release
 - Milestone 4 (Ongoing Maintenance): 25,000 CC/month, paid for the first 12 months after the committee acceptance of Milestone 3
