@@ -222,7 +222,7 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package) an
   - The end-to-end backend (the retained [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) daml-fuzz-canton driver) integrated under the DamlFuzz umbrella, with a written, versioned plan-format specification and campaign-to-plan lowering, so the same campaign replays on either execution path
   - Engine validated against the [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) PoC's mutation-testing corpus, matching its detection record (8/8 planted defects, zero false positives)
   - Comprehensive documentation and contributor guide
-  - Performance benchmark per execution path (accepted actions per minute and accepted-transaction ratio), measured against the [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) PoC's published baseline
+  - Performance benchmark per execution path (accepted transactions per second and accepted-transaction ratio), on a documented reference configuration, measured against the [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) PoC's published baseline
 
 ### Milestone 3: DamlFuzz: Benchmarking, Optimization and Standardized Applications
 - **Estimated Delivery:** 12 weeks after the committee acceptance of the prior milestone
@@ -231,7 +231,7 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package) an
   - Performance optimizations and new benchmarks
   - Coverage guided exploration integrated into the fuzzing engine with demonstrated improvements over plain property-based testing
   - Pre-built properties for selected CIP standards including CIP-0056, validated against the PoC's CIP-0056 findings and planted-defect corpus
-  - Ecosystem usabilty validation demonstrated through published case studies and integration tutorials
+  - Ecosystem usability validation demonstrated through published case studies and integration tutorials, including party-scoped invariant validation against a live participant
 
 ### Milestone 4: Ongoing Maintenance
 - **Estimated Delivery:** Ongoing for 12 months after the committee acceptance of Milestone 3
@@ -271,7 +271,7 @@ Additional project-specific acceptance conditions:
 - Property-based tests can be defined and executed via standard `daml test` workflow
 - Stateful fuzzing campaigns generate valid sequences of ledger operations with submitting parties derived from signatory and controller sets, reporting the accepted-transaction ratio per campaign
 - Shrinking produces minimal failing sequences (demonstrated on synthetic bugs)
-- Performance is sufficient for practical fuzzing campaigns (benchmark documented with specific throughput numbers)
+- Performance is sufficient for practical fuzzing campaigns: each execution path sustains at least 5 accepted transactions per second in the default (authorized) campaign mode, at steady state after warmup, against a single-participant local sandbox on the benchmark's documented reference configuration, with actual throughput per path documented in the Milestone 2
 
 ---
 
