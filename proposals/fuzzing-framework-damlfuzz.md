@@ -98,6 +98,38 @@ campaign_token_stress = Campaign
 
 The daml-fuzz-canton PoC proposed in [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) validates the system-level tier. It contains built-in conservation-of-value and non-negativity checks. Both carry into DamlFuzz's built-in invariant library and will be extended into the CIP-0056 property pack in Milestone 3. The PoC likewise validates the stateful campaign model (randomized multi-party sequences with configurable depth, run count, and action weighting), which DamlFuzz re-expresses as typed, user-authored campaign definitions rather than command-line configuration. The property language is the net-new core, part of Milestone 1, while the existing PoC provides the built-in set and lists custom invariants.
 
+Daml's distinctive risk surface is who can act and who can see. The costly bugs are capability and disclosure bugs: a choice whose controllers are broader than intended, a delegation that leaks a capability, a workflow that discloses a contract to the wrong party. Fuzzers built for global-state platforms cannot express these properties. Therefore, we add two more definition property levels:
+
+*Authorization properties* invert the oracle: the engine deliberately submits actions as party sets that should not be able to perform them. A rejection means the authorization model is working. An acceptance is the finding, i.e., a gap between declared and intended authorization, shrunk to the minimal sequence and party set that demonstrates it.
+
+```
+-- "No party set excluding the owner can transfer the holding"
+prop_only_owner_transfers : Property
+prop_only_owner_transfers = forAll genHolding $ \(owner, holdingCid) ->
+  forAllSubsets (excluding owner) $ \subset ->
+    expectRejected $ submitAs subset $ exerciseCmd holdingCid Transfer with ...
+```
+
+*Privacy properties* are party-scoped invariants: they state what a given party may observe, evaluated against that party's view of the ledger rather than an omniscient one.
+
+```
+-- "An uninvolved party observes nothing"
+invariant_bystander_blind : Invariant
+invariant_bystander_blind = invariantAs bystander $ do
+  visible <- queryVisible
+  pure (null visible)
+
+-- "No party ever observes a negative holding"
+invariant_no_negative_visible : Invariant
+invariant_no_negative_visible = forEachParty $ \p -> do
+  holdings <- queryAs p @Holding
+  pure $ all (\h -> h.amount >= 0.0) holdings
+```
+
+Party-scoped forms also stay meaningful outside the test runner. System-level invariants such as supply conservation need the omniscient view a `dpm test` setup provides; party-scoped invariants can be checked against a live participant, where visibility is per-party by construction.
+
+Both classes are already validated in practice by the daml-fuzz-canton PoC: its `--auth-fuzz` mode and `--privacy` check implement fixed versions of them, and they account for two of the four property tiers in its mutation-testing validation. DamlFuzz generalizes these fixed checks into the user-definable forms above. The retained end-to-end backend remains their highest-fidelity executor, since it exercises the participant's real authorization and visibility enforcement.
+
 **Component 3 - Fuzzing Engine (`DamlFuzz.Engine`):**
 
 The engine will orchestrate fuzzing campaigns:
