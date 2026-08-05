@@ -53,8 +53,8 @@ The foundation will be a generator library providing:
 - `Gen a` monad for building random value generators
 - Built-in generators for all Daml primitive types: `Int`, `Decimal`, `Text`, `Bool`, `Date`, `Time`, `Party`, `ContractId`
 - Combinators: `oneOf`, `frequency`, `listOf`, `mapOf`, `optional`, `suchThat`, `resize`, `scale`
-- Automatic derivation via code generation from compiled Daml-LF: DamlFuzz reads a project's .dar, decodes its Daml-LF packages, and emits Daml source providing `Arbitrary` instances for every user-defined data type and template
-- Shrinking: when a failing input is found, DamlFuzz will systematically reduce it to a minimal reproducer
+- Automatic derivation via code generation from compiled Daml-LF: DamlFuzz reads a project's .dar, decodes its Daml-LF packages, and emits Daml source providing `Arbitrary` instances for every user-defined data type and template, together with signatory and controller accessor functions consumed by the engine's actor derivation.
+- Shrinking: When a failing input is found, DamlFuzz will systematically reduce it to a minimal reproducer.
 
 The key technical challenge is that Daml has no `IO` monad and no `System.Random`. DamlFuzz will solve this by providing a **deterministic PRNG** implemented in pure Daml using `Int` arithmetic. The seed will be supplied externally via the test runner (Haskell side), making tests reproducible.
 
@@ -88,13 +88,17 @@ invariant_supply_conservation = Invariant $ do
 ```
 campaign_token_stress : Campaign
 campaign_token_stress = Campaign
-  { actions = [Action "transfer" genTransferAction, Action "allocate" genAllocateAction, ...]
-  , invariants = [invariant_supply_conservation, invariant_no_negative_balances]
-  , actors = [alice, bob, charlie, bank]
+  { actions         = [Action "transfer" genTransferAction, Action "allocate" genAllocateAction, ...]
+  , invariants      = [invariant_supply_conservation, invariant_no_negative_balances]
+  , parties         = [alice, bob, charlie, bank]  -- party universe allocated for the campaign
+  , actorMode       = Authorized       -- submitters derived from signatory/controller sets
+  , adversarialRate = 0.1              -- fraction of steps submitted as deliberately unauthorized sets
   , depth = 50        -- max actions per sequence
   , runs = 1000       -- number of random sequences
   }
 ```
+
+The parties field declares the campaign's party universe; the engine derives each action's actual submitters from the target contract's signatory and controller sets (see the fuzzing engine), with an optional adversarial fraction submitted as deliberately unauthorized sets per the authorization properties above.
 
 The daml-fuzz-canton PoC proposed in [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) validates the system-level tier. It contains built-in conservation-of-value and non-negativity checks. Both carry into DamlFuzz's built-in invariant library and will be extended into the CIP-0056 property pack in Milestone 3. The PoC likewise validates the stateful campaign model (randomized multi-party sequences with configurable depth, run count, and action weighting), which DamlFuzz re-expresses as typed, user-authored campaign definitions rather than command-line configuration. The property language is the net-new core, part of Milestone 1, while the existing PoC provides the built-in set and lists custom invariants.
 
@@ -137,7 +141,8 @@ The engine will orchestrate fuzzing campaigns:
 1. **Initialization:** Deploy contracts under test, set up initial state
 2. **Sequence generation:** For each run, generate a random sequence of up to `depth` actions:
    - Select a random action type from the campaign's action list (weighted by `frequency`)
-   - Select a random actor from the actor pool
+   - Determine the submitting parties from the target contract's signatory and controller sets, evaluated over the actual payload at run time, so sequences are authorized by construction; in adversarial mode, deliberately select party sets that should not be authorized
+   - Record each submission's accept/reject outcome
    - Generate random arguments using the action's generator
    - Submit the action via Daml Script's `submit` / `trySubmit`
 3. **Invariant checking:** After each successful action, evaluate all invariants. If any invariant returns `False`, record the failing sequence.
@@ -148,9 +153,9 @@ The engine will orchestrate fuzzing campaigns:
    - Verify the minimal sequence still reproduces the violation
    - Report the minimal failing sequence, and emit it as a replayable artifact (seed + symbolic plan)
 
-The engine will run as a Haskell executable that invokes Daml Script programmatically, supplying seeds and coverage feedback from the outside, while the Daml code holds the PRNG state, generates the values, and performs the ledger operations.
+The engine will run as a Haskell executable that invokes Daml Script programmatically, supplying seeds and coverage feedback from the outside, while the Daml code holds the PRNG state, generates the values, and performs the ledger operations. The engine reports the accepted-transaction ratio per campaign and per mode: in the default mode a high ratio indicates budget spent exercising contract logic; in adversarial mode rejections are the expected outcome and acceptances are findings.
 
-The [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) PoC already runs this <generate, execute, check, shrink> loop against a live Canton participant. It remains in the project as the second execution backend (black box).  Three pieces carry over directly:
+The [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) PoC already runs this <generate, execute, check, shrink> loop against a live Canton participant. It remains in the project as the second execution backend (black box), which approximates actor derivation via Party-typed field introspection rather than payload evaluation. Three pieces carry over directly:
 1. Campaigns use the PoC's symbolic plan format, so a seed plus a plan replays identically on either backend.
 2. Invariants are evaluated after every accepted action, following the semantics the PoC validated by mutation testing.
 3. PoC has functional sequence-level shrinking.
@@ -205,14 +210,15 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package) an
 
 ### Milestone 2: DamlFuzz: Fuzzing Engine with Shrinking
 - **Estimated Delivery:** 8 weeks after the committee acceptance of the prior milestone
-- **Focus:** Campaign orchestration, sequence generation, invariant checking, shrinking, end-to-end backend integration
+- **Focus:** Campaign orchestration, sequence generation, actor derivation, invariant checking, shrinking, end-to-end backend integration
 - **Deliverables / Value Metrics:**
   - `DamlFuzz.Engine` supporting stateful fuzzing campaigns with configurable depth and runs
+  - Actor derivation from signatory and controller sets, with an optional adversarial submission mode and accepted-transaction ratio reported per mode
   - Shrinking that reduces failing sequences to minimal, verified reproducers, emitted as replayable artifacts (seed + symbolic plan)
   - The end-to-end backend (the retained [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) daml-fuzz-canton driver) integrated under the DamlFuzz umbrella, with a written, versioned plan-format specification and campaign-to-plan lowering, so the same campaign replays on either execution path
   - Engine validated against the [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) PoC's mutation-testing corpus, matching its detection record (8/8 planted defects, zero false positives)
   - Comprehensive documentation and contributor guide
-  - Performance benchmark per execution path, measured against the [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) PoC's published baseline
+  - Performance benchmark per execution path (accepted actions per minute and accepted-transaction ratio), measured against the [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) PoC's published baseline
 
 ### Milestone 3: DamlFuzz: Benchmarking, Optimization and Standardized Applications
 - **Estimated Delivery:** 12 weeks after the committee acceptance of the prior milestone
@@ -259,7 +265,7 @@ Additional project-specific acceptance conditions:
 
 - DamlFuzz correctly generates random Daml values for all primitive types and user-defined data types
 - Property-based tests can be defined and executed via standard `daml test` workflow
-- Stateful fuzzing campaigns generate valid sequences of ledger operations respecting Daml's authorization model
+- Stateful fuzzing campaigns generate valid sequences of ledger operations with submitting parties derived from signatory and controller sets, reporting the accepted-transaction ratio per campaign
 - Shrinking produces minimal failing sequences (demonstrated on synthetic bugs)
 - Performance is sufficient for practical fuzzing campaigns (benchmark documented with specific throughput numbers)
 
