@@ -62,16 +62,18 @@ The daml-fuzz-canton PoC (built independently by @fronow, submitted as [PR#579](
 
 **Component 2 - Property Definition DSL (`DamlFuzz.Property`):**
 
-Developers will define properties using a domain-specific language at three levels:
+Developers will define properties using a domain-specific language at three levels, plus two Canton-specific classes of authorization and privacy properties:
 
 *Function-level properties* (postconditions on individual choices):
 ```
 -- "After a transfer, the sender's balance decreases by exactly the transfer amount"
 prop_transfer_sender_balance : Property
-prop_transfer_sender_balance = forAll genTransferArgs $ \(sender, receiver, amount) ->
-  let balanceBefore = queryBalance sender
-  in after (submit sender (exerciseCmd holdingCid Transfer with ..) ) $
-     queryBalance sender === balanceBefore - amount
+prop_transfer_sender_balance = forAll genTransferArgs $ \(sender, receiver, amount) -> do
+  holdingCid    <- setupHolding sender amount
+  balanceBefore <- queryBalance sender
+  submit sender $ exerciseCmd holdingCid Transfer with receiver, amount
+  balanceAfter  <- queryBalance sender
+  pure $ balanceAfter === balanceBefore - amount
 ```
 
 *System-level invariants* (must hold after every operation in a sequence):
@@ -79,10 +81,12 @@ prop_transfer_sender_balance = forAll genTransferArgs $ \(sender, receiver, amou
 -- "Total token supply is conserved across all transfers"
 invariant_supply_conservation : Invariant
 invariant_supply_conservation = Invariant $ do
-  holdings <- queryAll @Holding
+  holdings <- queryAll @Holding    -- requires the test setup's omniscient view
   let totalSupply = sum [h.amount | h <- holdings]
-  totalSupply === expectedTotalSupply
+  totalSupply === expectedTotalSupply   -- expectedTotalSupply captured from campaign setup
 ```
+
+System-level invariants aggregate state across the whole test ledger and rely on the omniscient vantage a `dpm test` setup provides---no single party holds such a view on a real Canton topology. The party-scoped invariants introduced below express the variants that remain checkable against a live participant.
 
 *Stateful fuzzing campaigns* (random sequences of operations):
 ```
@@ -102,7 +106,7 @@ The parties field declares the campaign's party universe; the engine derives eac
 
 The daml-fuzz-canton PoC proposed in [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) validates the system-level tier. It contains built-in conservation-of-value and non-negativity checks. Both carry into DamlFuzz's built-in invariant library and will be extended into the CIP-0056 property pack in Milestone 3. The PoC likewise validates the stateful campaign model (randomized multi-party sequences with configurable depth, run count, and action weighting), which DamlFuzz re-expresses as typed, user-authored campaign definitions rather than command-line configuration. The property language is the net-new core, part of Milestone 1, while the existing PoC provides the built-in set and lists custom invariants.
 
-Daml's distinctive risk surface is who can act and who can see. The costly bugs are capability and disclosure bugs: a choice whose controllers are broader than intended, a delegation that leaks a capability, a workflow that discloses a contract to the wrong party. Fuzzers built for global-state platforms cannot express these properties. Therefore, we add two more definition property levels:
+Daml's distinctive risk surface is who can act and who can see. The costly bugs are capability and disclosure bugs: a choice whose controllers are broader than intended, a delegation that leaks a capability, a workflow that discloses a contract to the wrong party. Fuzzers built for global-state platforms cannot express these properties. Per-party views and multi-party authorization exist only on Canton, making this class one of DamlFuzz's clearest differentiators. Therefore, the DSL adds two Canton-specific property classes:
 
 *Authorization properties* invert the oracle: the engine deliberately submits actions as party sets that should not be able to perform them. A rejection means the authorization model is working. An acceptance is the finding, i.e., a gap between declared and intended authorization, shrunk to the minimal sequence and party set that demonstrates it.
 
