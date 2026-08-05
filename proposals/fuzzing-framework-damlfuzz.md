@@ -166,18 +166,20 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package) an
 - **Focus:** Core `Gen` monad, PRNG, combinators, property definition, automatic derivation tool
 - **Deliverables / Value Metrics:**
   - `DamlFuzz.Gen` library with generators for all Daml primitives + combinators
-  - `DamlFuzz.Property` DSL for function-level and system-level properties
-  - `damlfuzz-derive` code generator producing `Arbitrary` instances from `.dar` files
-  - Deterministic PRNG validated for statistical quality
+  - `DamlFuzz.Property` DSL for function-level, system-level, and party-scoped properties
+  - `damlfuzz-derive` code generator producing Arbitrary instances from `.dar` files, including variant and enum constructor arguments
+  - Deterministic PRNG in pure Daml, behaviourally equivalent to the PoC's reference generator as verified by shared cross-validation vectors, with statistical quality validated against standard PRNG test batteries
 
 ### Milestone 2: DamlFuzz: Fuzzing Engine with Shrinking
 - **Estimated Delivery:** 8 weeks after commencing
 - **Focus:** Campaign orchestration, sequence generation, invariant checking, shrinking
 - **Deliverables / Value Metrics:**
-  - `DamlFuzz.Engine` supporting stateful fuzzing campaigns with configurable depth and runs
-  - Shrinking that reduces failing sequences to minimal reproducers
+  - DamlFuzz.Engine supporting stateful fuzzing campaigns with configurable depth and runs
+  - Shrinking that reduces failing sequences to minimal, verified reproducers, emitted as replayable artifacts (seed + symbolic plan)
+  - The end-to-end backend (the retained [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) daml-fuzz-canton driver) integrated under the DamlFuzz umbrella, with a written, versioned plan-format specification and campaign-to-plan lowering, so the same campaign replays on either execution path
+  - Engine validated against the [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) PoC's mutation-testing corpus, matching its detection record (8/8 planted defects, zero false positives)
   - Comprehensive documentation and contributor guide
-  - Performance benchmark
+  - Performance benchmark per execution path, measured against the [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) PoC's published baseline
 
 ### Milestone 3: DamlFuzz: Benchmarking, Optimization and Standardized Applications
 - **Estimated Delivery:** 12 weeks after commencing
@@ -185,11 +187,11 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package) an
 - **Deliverables / Value Metrics:**
   - Performance optimizations and new benchmarks
   - Coverage guided exploration integrated into the fuzzing engine with demonstrated improvements over plain property-based testing
-  - Pre-built properties for selected CIP standards including CIP-0056
+  - Pre-built properties for selected CIP standards including CIP-0056, validated against the PoC's CIP-0056 findings and planted-defect corpus
   - Ecosystem usabilty validation of usability demonstrated through published case studies and integration tutorials
 
 ### Milestone 4: Ongoing Maintenance
-- **Estimated Delivery:** Ongoing for 12 month after delivering Milestone 2
+- **Estimated Delivery:** Ongoing for 12 months after delivering Milestone 2
 - **Focus:** The team commits to maintaining the tool and providing developer support for 12 months following the completion. The code will be maintained as an open-source project during the entire duration. The team is interested in providing long-term support for the tool even after the initial commitment window elapses. In laymen terms, the team will ensure that the tool is ready and safe to use out of the box, actively maintain the repository during this period, and provide developer support for the ecosystem. This will include:
   - Bugfixes
   - Security updates - critical with the dependency supply chain attack 
@@ -206,7 +208,7 @@ Note that DamlFuzz will continue being usable even after funding period. The pro
   - Number of (un)resolved developer support tickets in Github
 
 ### Milestone 5: Ecosystem Adoption
-- **Estimated Delivery:** Ongoing for 12 month after delivering Milestone 2
+- **Estimated Delivery:** Ongoing for 12 months after delivering Milestone 2
 - **Focus:** The team will focus on supporting ecosystem projects and other ecosystem participants in integrating DamlFuzz to improve the security posture of their code. This is an event-based milestone that aligns the grant and the proposed tool with the ecosystem adoption. We request 100,000 CC/project using the DamlFuzz, as demonstrated by their repository or an external audit report. The events will count within the first 12 months of the tool becoming usable, and the payouts will be limited to such 10 events (that is 1,000,000 CC milestone cap).
 - **Deliverables / Value Metrics:**
   - Number of projects integrating DamlFuzz
