@@ -41,7 +41,7 @@ The 2026 Canton Developer Experience Survey identified security tooling as "Impo
 
 ### 2. Implementation Mechanics
 
-_Note: A fuzzing tool for Daml was proposed independently in [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) on July 20, 2026 by @fronow. It includes an implemented PoC taking a complementary approach: an external driver fuzzing a live participant over the JSON Ledger API, where this proposal centres on a Daml-native workflow inside `dpm test`. The two teams agreed to join efforts to deliver a production-grade tool with committed long-term maintenance, and this proposal has been adjusted accordingly._
+_Note: A fuzzing tool for Daml was proposed independently in [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) on July 20, 2026 by @fronow. It includes an implemented PoC taking a complementary approach: an external driver fuzzing a live participant over the JSON Ledger API. This proposal centres on a Daml-native workflow inside `dpm test`. The two teams agreed to join efforts to deliver a production-grade tool with committed long-term maintenance, and this proposal has been adjusted accordingly._
 
 an external driver fuzzing a live participant over the JSON Ledger API, where this proposal centres on a Daml-native workflow inside dpm test
 
@@ -53,12 +53,12 @@ The foundation will be a generator library providing:
 - `Gen a` monad for building random value generators
 - Built-in generators for all Daml primitive types: `Int`, `Decimal`, `Text`, `Bool`, `Date`, `Time`, `Party`, `ContractId`
 - Combinators: `oneOf`, `frequency`, `listOf`, `mapOf`, `optional`, `suchThat`, `resize`, `scale`
-- Automatic derivation via code generation from compiled Daml-LF: DamlFuzz reads a project's .dar, decodes its Daml-LF packages, and emits Daml source providing Arbitrary instances for every user-defined data type and template
+- Automatic derivation via code generation from compiled Daml-LF: DamlFuzz reads a project's .dar, decodes its Daml-LF packages, and emits Daml source providing `Arbitrary` instances for every user-defined data type and template
 - Shrinking: when a failing input is found, DamlFuzz will systematically reduce it to a minimal reproducer
 
 The key technical challenge is that Daml has no `IO` monad and no `System.Random`. DamlFuzz will solve this by providing a **deterministic PRNG** implemented in pure Daml using `Int` arithmetic. The seed will be supplied externally via the test runner (Haskell side), making tests reproducible.
 
-The daml-fuzz-canton PoC (built independently by @fronow, submitted as [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579), now merged into this effort) validates the reproducibility architecture in practice: it generates transaction plans from an externally supplied deterministic seed. It does so host-side, because its executor drives the ledger from outside over the JSON Ledger API. DamlFuzz adopts the same seed-in, deterministic-out contract and reuses the PoC's generator design and validation methodology as the reference implementation. Behavioural equivalence between the two generators will be maintained through shared cross-validation vectors, and the statistical quality of the implemented PRNG will be validated against the shared algorithm with standard PRNG. An in-Daml implementation remains necessary because campaigns on the primary workflow execute inside Daml Script via `dpm test`, where generators are typed against choice signatures, can invoke user-defined Daml functions and constraints, and run at in-process speed. Those are capabilities that host-side generation cannot provide.
+The daml-fuzz-canton PoC (built independently by @fronow, submitted as [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579), now merged into this effort) validates the reproducibility architecture in practice: it generates transaction plans from an externally supplied deterministic seed. It does so host-side, because its executor drives the ledger from outside over the JSON Ledger API. DamlFuzz adopts the same seed-in, deterministic-out contract and reuses the PoC's generator design and validation methodology as the reference implementation. Behavioural equivalence between the two generators will be maintained through shared cross-validation vectors, and the statistical quality of the implemented PRNG will be validated against the shared algorithm with standard PRNG test batteries. An in-Daml implementation remains necessary because campaigns on the primary workflow execute inside Daml Script via `dpm test`, where generators are typed against choice signatures, can invoke user-defined Daml functions and constraints, and run at in-process speed. Those are capabilities that host-side generation cannot provide.
 
 **Component 2 - Property Definition DSL (`DamlFuzz.Property`):**
 
@@ -96,7 +96,7 @@ campaign_token_stress = Campaign
   }
 ```
 
-The daml-fuzz-canton PoC proposed in [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) validates the system-level tier. It contains built-in conservation-of-value and non-negativity checks. Both carry into DamlFuzz's built-in invariant library and will be extended into the CIP-0056 property pack in Milestone 3. The PoC likewise validates the stateful campaign model (randomized multi-party sequences with configurable depth, run count, and action weighting), which DamlFuzz re-expresses as typed, user-authored campaign definitions rather than command-line configuration. The property language is the net-new core, part of Milestone 1, while the existing the PoC provides the built-in set and lists custom invariants as planned.
+The daml-fuzz-canton PoC proposed in [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) validates the system-level tier. It contains built-in conservation-of-value and non-negativity checks. Both carry into DamlFuzz's built-in invariant library and will be extended into the CIP-0056 property pack in Milestone 3. The PoC likewise validates the stateful campaign model (randomized multi-party sequences with configurable depth, run count, and action weighting), which DamlFuzz re-expresses as typed, user-authored campaign definitions rather than command-line configuration. The property language is the net-new core, part of Milestone 1, while the existing PoC provides the built-in set and lists custom invariants.
 
 **Component 3 - Fuzzing Engine (`DamlFuzz.Engine`):**
 
@@ -113,11 +113,12 @@ The engine will orchestrate fuzzing campaigns:
 5. **Shrinking:** When a violation is found, systematically reduce the sequence:
    - Remove actions that do not affect the violation
    - Shrink action arguments to smaller values
-   - Report the minimal failing sequence
+   - Verify the minimal sequence still reproduces the violation
+   - Report the minimal failing sequence, and emit it as a replayable artifact (seed + symbolic plan)
 
 The engine will run as a Haskell executable that invokes Daml Script programmatically, supplying seeds and coverage feedback from the outside, while the Daml code holds the PRNG state, generates the values, and performs the ledger operations.
 
-The [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) PoC already runs this <generate, execute, check, shrink> loop against a live Canton participant. It can remain in the project as the second execution backend.  Three pieces carry over directly:
+The [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) PoC already runs this <generate, execute, check, shrink> loop against a live Canton participant. It remains in the project as the second execution backend (black box).  Three pieces carry over directly:
 1. Campaigns use the PoC's symbolic plan format, so a seed plus a plan replays identically on either backend.
 2. Invariants are evaluated after every accepted action, following the semantics the PoC validated by mutation testing.
 3. PoC has functional sequence-level shrinking.
@@ -163,18 +164,18 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package) an
 
 ### Milestone 1: DamlFuzz: Generator Framework and Property DSL
 - **Estimated Delivery:** 14 weeks after commencing
-- **Focus:** Core `Gen` monad, PRNG, combinators, property definition, automatic derivation tool
+- **Focus:** Core `Gen` monad, PRNG, combinators, function-, system-, and party-scoped property definition, automatic derivation tool
 - **Deliverables / Value Metrics:**
   - `DamlFuzz.Gen` library with generators for all Daml primitives + combinators
   - `DamlFuzz.Property` DSL for function-level, system-level, and party-scoped properties
-  - `damlfuzz-derive` code generator producing Arbitrary instances from `.dar` files, including variant and enum constructor arguments
+  - `damlfuzz-derive` code generator producing `Arbitrary` instances from `.dar` files, including variant and enum constructor arguments
   - Deterministic PRNG in pure Daml, behaviourally equivalent to the PoC's reference generator as verified by shared cross-validation vectors, with statistical quality validated against standard PRNG test batteries
 
 ### Milestone 2: DamlFuzz: Fuzzing Engine with Shrinking
 - **Estimated Delivery:** 8 weeks after commencing
-- **Focus:** Campaign orchestration, sequence generation, invariant checking, shrinking
+- **Focus:** Campaign orchestration, sequence generation, invariant checking, shrinking, end-to-end backend integration
 - **Deliverables / Value Metrics:**
-  - DamlFuzz.Engine supporting stateful fuzzing campaigns with configurable depth and runs
+  - `DamlFuzz.Engine` supporting stateful fuzzing campaigns with configurable depth and runs
   - Shrinking that reduces failing sequences to minimal, verified reproducers, emitted as replayable artifacts (seed + symbolic plan)
   - The end-to-end backend (the retained [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) daml-fuzz-canton driver) integrated under the DamlFuzz umbrella, with a written, versioned plan-format specification and campaign-to-plan lowering, so the same campaign replays on either execution path
   - Engine validated against the [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) PoC's mutation-testing corpus, matching its detection record (8/8 planted defects, zero false positives)
@@ -188,7 +189,7 @@ No backward compatibility impact. DamlFuzz will be a library (`.dar` package) an
   - Performance optimizations and new benchmarks
   - Coverage guided exploration integrated into the fuzzing engine with demonstrated improvements over plain property-based testing
   - Pre-built properties for selected CIP standards including CIP-0056, validated against the PoC's CIP-0056 findings and planted-defect corpus
-  - Ecosystem usabilty validation of usability demonstrated through published case studies and integration tutorials
+  - Ecosystem usabilty validation demonstrated through published case studies and integration tutorials
 
 ### Milestone 4: Ongoing Maintenance
 - **Estimated Delivery:** Ongoing for 12 months after delivering Milestone 2
@@ -209,7 +210,7 @@ Note that DamlFuzz will continue being usable even after funding period. The pro
 
 ### Milestone 5: Ecosystem Adoption
 - **Estimated Delivery:** Ongoing for 12 months after delivering Milestone 2
-- **Focus:** The team will focus on supporting ecosystem projects and other ecosystem participants in integrating DamlFuzz to improve the security posture of their code. This is an event-based milestone that aligns the grant and the proposed tool with the ecosystem adoption. We request 100,000 CC/project using the DamlFuzz, as demonstrated by their repository or an external audit report. The events will count within the first 12 months of the tool becoming usable, and the payouts will be limited to such 10 events (that is 1,000,000 CC milestone cap).
+- **Focus:** The team will focus on supporting ecosystem projects and other ecosystem participants in integrating DamlFuzz through the Daml-native workflow (explicitly excluding zero-config path use) to improve the security posture of their code. This is an event-based milestone that aligns the grant and the proposed tool with the ecosystem adoption. We request 100,000 CC/project using the DamlFuzz, as demonstrated by their repository or an external audit report. The events will count within the first 12 months of the tool becoming usable, and the payouts will be limited to such 10 events (that is 1,000,000 CC milestone cap).
 - **Deliverables / Value Metrics:**
   - Number of projects integrating DamlFuzz
 ---
