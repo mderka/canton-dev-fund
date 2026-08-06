@@ -14,7 +14,7 @@ We propose developing a fuzzer for Daml smart contracts.
 
 Unit testing of Daml code relies on developers writing specific scenarios in Daml Script and asserting expected outcomes. There is no way to automatically generate random sequences of ledger operations, no way to define system-wide invariants, and no way to explore the contract state space beyond the scenarios a developer manually anticipates. Developers are used to tooling that is mature and readily available for languages and development frameworks in other ecosystems (c.f. the Foundry tools for Ethereum), and its absence provides an inferior experience for developers of applications on Canton Network.
 
-The fuzzing tool will provision the first property-based testing and coverage-guided fuzzing framework for Daml smart contracts while being designed from the ground up for Daml's unique authorization model, UTXO-like state, and multi-party privacy semantics. It will be developed as open-source, free to use, executable locally, will integrate with the current Daml tooling, and will provide reports usable in CI/CD pipelines.
+The fuzzing tool will provision a property-based testing and the first coverage-guided fuzzing framework for Daml smart contracts while being designed from the ground up for Daml's unique authorization model, UTXO-like state, and multi-party privacy semantics. It will be developed as open-source, free to use, executable locally, will integrate with the current Daml tooling, and will provide reports usable in CI/CD pipelines.
 
 ---
 
@@ -42,8 +42,6 @@ The 2026 Canton Developer Experience Survey identified security tooling as "Impo
 ### 2. Implementation Mechanics
 
 _Note: A fuzzing tool for Daml was proposed independently in [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579) on July 20, 2026 by @fronow. It includes an implemented PoC taking a complementary approach: an external driver fuzzing a live participant over the JSON Ledger API. This proposal centres on a Daml-native workflow inside `dpm test`. The two teams agreed to join efforts to deliver a production-grade tool with committed long-term maintenance, and this proposal has been adjusted accordingly._
-
-an external driver fuzzing a live participant over the JSON Ledger API, where this proposal centres on a Daml-native workflow inside dpm test
 
 We propose DamlFuzz as a **Daml Script extension** with a companion Haskell library. The design will follow the proven architecture of invariant testing tools that developers are used to from the Ethereum ecosystem, adapted for Daml's unique execution model. The work will focus on three main components:
 
@@ -174,6 +172,7 @@ The remaining development items are shrinking argument values, not just sequence
 | Daml Script | DamlFuzz uses `submit`, `trySubmit`, `query`, `allocateParty` - all standard Daml Script APIs |
 | `dpm build` | DamlFuzz is a `.dar` dependency added to `daml.yaml` |
 | DPM | Installable via `dpm install` as a vendored `.dar` |
+| JSON Ledger API v2 | The end-to-end backend drives any reachable participant (local sandbox or LocalNet) as a standard API client |
 
 ### 3. Architectural Alignment
 
@@ -192,12 +191,12 @@ This section lists the ecosystem adopters who expressed interest in adopting and
 - Bitsafe: would [love better tooling](https://github.com/canton-foundation/canton-dev-fund/pull/323#issuecomment-4798960139) around security, static analysis and test-coverage of Daml, and would integrate the tool into their development workflow
 - Audit provider 1 (name available upon request): DamlFuzz will be used during audit engagements
 
-An independent proposal for a similar tool in [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579), including the referenced defects in the CIP-0056 implementation, are additional indicators that there is demand for a fuzzer for Daml, and that it will benefit the security of the ecosystem. _Note: The two teams agreed to join efforts to deliver a production-grade tool with committed long-term maintenance, and this proposal has been adjusted accordingly._
+An independent proposal for a similar tool in [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579), including the referenced defects in the CIP-0056 implementation, is an additional indicator that there is demand for a fuzzer for Daml, and that it will benefit the security of the ecosystem. _Note: The two teams agreed to join efforts to deliver a production-grade tool with committed long-term maintenance, and this proposal has been adjusted accordingly._
 
 
 ### 4. Backward Compatibility
 
-No backward compatibility impact. DamlFuzz will be a library (`.dar` package) and a companion Haskell executable. It will use only public Daml Script APIs and will not modify the Daml compiler, SDK, or Canton node software. Projects will opt in by adding DamlFuzz as a test dependency.
+No backward compatibility impact. DamlFuzz will be a library (`.dar` package), a companion Haskell executable, and a standalone end-to-end backend executable. All components use only public, stable interfaces. This includes the Daml Script APIs and Daml-LF format for the native path, and the JSON Ledger API v2 for the end-to-end backend. None modifies the Daml compiler, SDK, or Canton node software. Projects will opt in by adding DamlFuzz as a test dependency.
 
 ---
 
@@ -252,7 +251,7 @@ Note that DamlFuzz will continue being usable even after funding period. The pro
 
 ### Milestone 5: Ecosystem Adoption
 - **Estimated Delivery:** Ongoing for 12 months after the committee acceptance of Milestone 3
-- **Focus:** The team will focus on supporting ecosystem projects and other ecosystem participants in integrating DamlFuzz through the Daml-native workflow (explicitly excluding zero-config path use) to improve the security posture of their code. This is an event-based milestone that aligns the grant and the proposed tool with the ecosystem adoption. An adoption event is an external organization integrating DamlFuzz into its development or assurance workflow. Events are evidenced by verifiable artifacts committed to the codebase, for example, a DamlFuzz dependency in `daml.yaml` together with campaign definitions, or CI configuration executing DamlFuzz in the adopter's repository, or the adopter's own published report describing its DamlFuzz use to the Tech & Ops Committee. The committee is the final arbiter of whether an event qualifies. Events accrue at 100,000 CC per adopting project within the adoption window -- the first 12 months after the committee acceptance of Milestone 3 -- capped at 10 events (1,000,000 CC milestone cap).
+- **Focus:** The team will focus on supporting ecosystem projects and other ecosystem participants in integrating DamlFuzz through the Daml-native workflow (explicitly excluding zero-config path use) to improve the security posture of their code. This is an event-based milestone that aligns the grant and the proposed tool with the ecosystem adoption. An adoption event is an external organization integrating DamlFuzz into its development or assurance workflow. Events are evidenced by verifiable artifacts committed to the codebase, for example, a DamlFuzz dependency in `daml.yaml` together with campaign definitions, or CI configuration executing DamlFuzz in the adopter's repository, or the adopter's own published report describing its DamlFuzz use. Where adopter-authored artifacts are not public or are ambiguous, the Tech & Ops Committee may request confirmation from the adopter directly, and is the final arbiter of whether an event qualifies. Events accrue at 100,000 CC per adopting project within the adoption window -- the first 12 months after the committee acceptance of Milestone 3 -- capped at 10 events (1,000,000 CC milestone cap).
 - **Deliverables / Value Metrics:**
   - Number of projects integrating DamlFuzz
 ---
@@ -268,10 +267,10 @@ The Tech & Ops Committee will evaluate completion based on:
 Additional project-specific acceptance conditions:
 
 - DamlFuzz correctly generates random Daml values for all primitive types and user-defined data types
-- Property-based tests can be defined and executed via standard `daml test` workflow
+- Property-based tests can be defined and executed via standard `dpm test` workflow
 - Stateful fuzzing campaigns generate valid sequences of ledger operations with submitting parties derived from signatory and controller sets, reporting the accepted-transaction ratio per campaign
 - Shrinking produces minimal failing sequences (demonstrated on synthetic bugs)
-- Performance is sufficient for practical fuzzing campaigns: each execution path sustains at least 5 accepted transactions per second in the default (authorized) campaign mode, at steady state after warmup, against a single-participant local sandbox on the benchmark's documented reference configuration, with actual throughput per path documented in the Milestone 2
+- Performance is sufficient for practical fuzzing campaigns: each execution path sustains at least 5 accepted transactions per second in the default (authorized) campaign mode, at steady state after warmup, against a single-participant local sandbox on the benchmark's documented reference configuration, with actual throughput per path documented in the Milestone 2 benchmark
 
 ---
 
@@ -285,9 +284,8 @@ Additional project-specific acceptance conditions:
 - Milestone 2 (Fuzzing Engine with Shrinking): 500,000 CC upon committee acceptance and release
 - Milestone 3 (Benchmarking, Optimization and Standardized Applications): 150,000 CC upon committee acceptance and release
 - Milestone 4 (Ongoing Maintenance): 25,000 CC/month, paid for the first 12 months after the committee acceptance of Milestone 3
-- Milestone 5 (Ecosystem Adoption): an event-based milestone to demonstrate ecosystem alignment; 100,000 CC/project using the DamlFuzz, as evidenced by the project's repository, or by the adopter directly to the committee, within 12 months after the committee acceptance of Milestone 3, capped at 1,000,000 CC (10 payable events)
+- Milestone 5 (Ecosystem Adoption): an event-based milestone to demonstrate ecosystem alignment; 100,000 CC/project using the DamlFuzz, as evidenced by the project's repository, or by the adopter reporting directly to the committee, within 12 months adoption window after the committee acceptance of Milestone 3, capped at 1,000,000 CC (10 payable events)
 
-evidenced per the Milestone 5 adoption-evidence standard (adopter-authored verifiable artifacts;
 ### Volatility Stipulation
 The grant is denominated in fixed Canton Coin and will require a re-evaluation at the 6-month mark.
 
@@ -338,7 +336,7 @@ Every major competing smart contract platform has addressed this gap. Foundry (`
 The immediate beneficiaries are the developers building on Canton Network today - those implementing CIP-0056 token standards, building dApps under CIP-0103, or contributing to shared infrastructure like Daml Finance. The strategic beneficiary is the Canton Network itself: a platform that can credibly claim production-quality security tooling attracts more sophisticated builders and more institutional adopters. Developer tooling is infrastructure, and like all infrastructure, its absence is most visible when something breaks.
 
 Notes: 
-- Prior fuzzing work in other ecosystems validates the approach and the need, but is not reusable here---Daml's authorization model, UTXO-like state, and multi-party privacy semantics require a redesign. The funding covers the Daml-specific engineering. (b)
+- Prior fuzzing work in other ecosystems validates the approach and the need, but is not reusable here---Daml's authorization model, UTXO-like state, and multi-party privacy semantics require a redesign. The funding covers the Daml-specific engineering.
 - We received verbal confirmation that there is no overlapping work at Digital Assets. 
 
 ---
