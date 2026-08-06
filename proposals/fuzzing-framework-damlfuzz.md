@@ -189,7 +189,9 @@ This section lists the ecosystem adopters who expressed interest in adopting and
 - Quantstamp (audit provider): DamlFuzz will be used to discover invariant violations in client audits.
 - Coinversa.ai (project on Canton): DamlFuzz will be used to strengthen the test suite.
 - Bitsafe: would [love better tooling](https://github.com/canton-foundation/canton-dev-fund/pull/323#issuecomment-4798960139) around security, static analysis and test-coverage of Daml, and would integrate the tool into their development workflow
-- Audit provider 1 (name available upon request): DamlFuzz will be used during audit engagements
+- Audit provider no. 1 (name available upon request): DamlFuzz will be used during audit engagements
+- Audit provider no. 2 (name available upon request): "If there is fuzzer, our guys will use it"
+- Moonsong Labs: "[We’d like to see this built](https://github.com/canton-foundation/canton-dev-fund/pull/52#issuecomment-5179772350), and the proposal aligns with our technical expectations for this type of tooling"
 
 An independent proposal for a similar tool in [PR#579](https://github.com/canton-foundation/canton-dev-fund/pull/579), including the referenced defects in the CIP-0056 implementation, is an additional indicator that there is demand for a fuzzer for Daml, and that it will benefit the security of the ecosystem. _Note: The two teams agreed to join efforts to deliver a production-grade tool with committed long-term maintenance, and this proposal has been adjusted accordingly._
 
